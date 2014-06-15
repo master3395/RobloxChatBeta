@@ -126,45 +126,53 @@ public class Launcher
 		
 		login();
 		
-		if (SystemTray.isSupported())
+		try
 		{
-			trayEnabled = true;
-			PopupMenu trayPopup = new PopupMenu();
-			
-			MenuItem showWindow = new MenuItem("Show Window");
-			showWindow.addActionListener(new ActionListener()
+			if (SystemTray.isSupported())
 			{
-				@Override
-				public void actionPerformed(ActionEvent e)
+				trayEnabled = true;
+				PopupMenu trayPopup = new PopupMenu();
+				
+				MenuItem showWindow = new MenuItem("Show Window");
+				showWindow.addActionListener(new ActionListener()
 				{
-					Launcher.defaultFrame.setVisible(true);
-				}
-			});
-			trayPopup.add(showWindow);
-			
-			MenuItem exit = new MenuItem("Exit");
-			exit.addActionListener(new ActionListener()
-			{
-				@Override
-				public void actionPerformed(ActionEvent e)
+					@Override
+					public void actionPerformed(ActionEvent e)
+					{
+						Launcher.defaultFrame.setVisible(true);
+					}
+				});
+				trayPopup.add(showWindow);
+				
+				MenuItem exit = new MenuItem("Exit");
+				exit.addActionListener(new ActionListener()
 				{
-					System.exit(0);
+					@Override
+					public void actionPerformed(ActionEvent e)
+					{
+						System.exit(0);
+					}
+				});
+				trayPopup.add(exit);
+				
+				TrayIcon trayIcon = new TrayIcon(Toolkit.getDefaultToolkit().createImage(Launcher.class.getResource("/imgs/favicon16.png")));
+				trayIcon.setPopupMenu(trayPopup);
+				
+				try
+				{
+					SystemTray.getSystemTray().add(trayIcon);
 				}
-			});
-			trayPopup.add(exit);
-			
-			TrayIcon trayIcon = new TrayIcon(Toolkit.getDefaultToolkit().createImage(Launcher.class.getResource("/imgs/favicon16.png")));
-			trayIcon.setPopupMenu(trayPopup);
-			
-			try
-			{
-				SystemTray.getSystemTray().add(trayIcon);
+				catch (Exception e)
+				{
+					trayEnabled = false;
+					error(e.getMessage());
+				}
 			}
-			catch (Exception e)
-			{
-				trayEnabled = false;
-				error(e.getMessage());
-			}
+		}
+		catch (Exception e)
+		{
+			error(e.getMessage());
+			trayEnabled = false;
 		}
 		
 		defaultFrame = new DefaultWindow();
