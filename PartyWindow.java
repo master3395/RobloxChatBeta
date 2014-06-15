@@ -26,8 +26,10 @@ import javax.swing.text.html.StyleSheet;
 public class PartyWindow extends JFrame
 {
 	private Party theParty;
-	private ArrayList<MessageBox> boxes = new ArrayList<MessageBox>();
 	private PartyWindow window = this;
+	
+	public ArrayList<MessageBox> boxes = new ArrayList<MessageBox>();
+	public JEditorPane chats;
 	
 	public PartyWindow(Party party)
 	{
@@ -92,7 +94,7 @@ public class PartyWindow extends JFrame
 		});
 		pane.add(leaveParty, gbc);
 		
-		final JEditorPane chats = new JEditorPane("text/html", "<html></html>");
+		chats = new JEditorPane("text/html", "<html></html>");
 		chats.setEditable(false);
 		chats.setBackground(getBackground());
 		
@@ -174,19 +176,27 @@ public class PartyWindow extends JFrame
 			public void onChatted(String speakerName, int speakerId, String speakerThumb, String message)
 			{
 				boxes.add(new MessageBox(speakerName, speakerThumb, message));
-				String html = "";
-				
-				for (int i = 0; i < boxes.size(); i++)
-				{
-					html += boxes.get(i).getHtml();
-				}
-				
-				chats.setText("<html><body style='font-family: Century Gothic'>" + html + "</body></html>");
-				
-				if (!isFocused() && !isActive())
-					Launcher.chatSound();
+				updateChats();
 			}
 		});
+	}
+	
+	public void updateChats()
+	{
+		String html = "";
+		
+		for (int i = 0; i < boxes.size(); i++)
+		{
+			html += boxes.get(i).getHtml();
+		}
+		
+		chats.setText("<html><body style='font-family: Century Gothic'>" + html + "</body></html>");
+		
+		if (!isFocused() && !isActive() && Launcher.properties.getProperty("Chat Sounds").equals(true))
+			Launcher.chatSound();
+		
+		if (!isVisible())
+			setVisible(true);
 	}
 	
 	@Override
@@ -194,6 +204,9 @@ public class PartyWindow extends JFrame
 	{
 		super.setVisible(visible);
 		requestFocusInWindow();
+		
+		if (visible)
+			updateChats();
 		
 		Point parentPoint = Launcher.defaultFrame.getLocation();
 		Dimension parentSize = Launcher.defaultFrame.getSize();

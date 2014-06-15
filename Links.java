@@ -87,4 +87,11 @@ public class Links
 	 * The link to login. Must be a post with username=%s&password=%s
 	 */
 	public static final String Login = "https://www.roblox.com/newlogin";
+	
+	/**
+	 * The link to accept party invites.
+	 * <br><br>
+	 * <b>%s</b> token
+	 */
+	public static final String AcceptPartyInvite = "http://www.roblox.com/chat/party.ashx?token=%s&reqtype=acceptInvite";
 }

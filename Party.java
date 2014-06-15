@@ -1,6 +1,8 @@
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 public class Party
 {
 	private PartyInfo info;
@@ -35,7 +37,8 @@ public class Party
 			worked = false;
 		}
 		
-		this.isActive = worked;
+		isActive = worked;
+		firstInvite = true;
 	}
 	
 	public boolean leaveParty()
@@ -47,11 +50,16 @@ public class Party
 			isActive = false;
 			firstInvite = false;
 			info = null;
+			messages.clear();
+			window.boxes.clear();
+			window.chats.setText("");
 			String response = EasyHttp.getWithToken(String.format(Links.KickFromParty, "%s", Launcher.userId));
 			ErrorInfo errorInfo = Launcher.gson.fromJson(response, ErrorInfo.class);
 
 			if (errorInfo.Error.isEmpty())
+			{
 				System.out.println("Succesfully left party");
+			}
 			else
 				System.out.println("Failed to leave party. " + errorInfo.Error);
 		}
@@ -133,23 +141,18 @@ public class Party
 		}
 	}
 	
-	/**
-	 * <b>0</b> = worked<br>
-	 * <b>1</b> = error<br>
-	 * <b>2</b> = disabled party
-	 */
-	public int doUpdate()
+	public void doUpdate()
 	{
-		int success = 0;
-	
-		if (isActive)
-		{
-			String response = "";
+		String response = "";
 			
-			try
+		try
+		{
+			response = EasyHttp.getWithToken(Links.GetPartyInfo);
+			this.info = Launcher.gson.fromJson(response, PartyInfo.class);
+			
+			if (isActive)
 			{
-				response = EasyHttp.getWithToken(Links.GetPartyInfo);
-				this.info = Launcher.gson.fromJson(response, PartyInfo.class);
+				window.setTitle("Party of " + info.Members.length);
 				
 				for (int i = 0; i < info.Conversation.length; i++)
 				{
@@ -169,16 +172,57 @@ public class Party
 						break;
 				}
 			}
-			catch (Exception e)
+			else
 			{
-				e.printStackTrace();
-				success = 1;
+				if (info != null && info.Members != null)
+				{
+					for (int i = 0; i < info.Members.length; i++)
+					{
+						PartyMembers member = info.Members[i];
+						
+						if (member != null && member.UserID == Launcher.userId)
+						{
+							if (member.Pending)
+							{
+								int result = JOptionPane.showConfirmDialog(null, "Would you like to join " + info.CreatorName + "'s party?", "Party Invite!", JOptionPane.YES_NO_OPTION);
+								
+								if (result == JOptionPane.YES_OPTION)
+								{
+									response = EasyHttp.getWithToken(Links.AcceptPartyInvite);
+									PartyInfo partyInfo = Launcher.gson.fromJson(response, PartyInfo.class);
+									
+									if (partyInfo.Error == null || partyInfo.Error.isEmpty())
+									{
+										info = partyInfo;
+										isActive = true;
+										firstInvite = true;
+										window.setVisible(true);
+									}
+									else
+										Launcher.error(partyInfo.Error);
+								}
+								else
+								{
+									leaveParty();
+								}
+							}
+							else
+							{
+								isActive = true;
+								firstInvite = true;
+								
+								if (!window.isVisible())
+									window.setVisible(true);
+							}
+						}
+					}
+				}
 			}
 		}
-		else
-			success = 2;
-		
-		return success;
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	public String getThumbFromId(int userId)

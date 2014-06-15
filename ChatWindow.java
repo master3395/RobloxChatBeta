@@ -133,7 +133,7 @@ public class ChatWindow extends JFrame
 				
 				if (response.equals("OK") || response.equals("{\"Error\" : \"\"}"))
 				{
-					addMessage(Launcher.userName, Launcher.userId, "", message); // TOOD: Should I just get rid of this thumb sending?
+					addMessage(Launcher.userName, Launcher.userId, "", message); // TOOD: Should I just get rid of this thumb transfering?
 				}
 				else if (!response.isEmpty())
 					Launcher.error(response);
@@ -157,7 +157,7 @@ public class ChatWindow extends JFrame
 		
 		chats.setText("<html><body style='font-family: Century Gothic'>" + html + "</body></html>");
 		
-		if (!isFocused() && !isActive())
+		if (!isFocused() && !isActive() && Launcher.properties.getProperty("Chat Sounds").equals(true))
 			Launcher.chatSound();
 		
 		if (!isVisible())

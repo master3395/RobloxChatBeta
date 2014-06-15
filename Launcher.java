@@ -200,16 +200,16 @@ public class Launcher
 		final JFrame frame = new JFrame("Please Login");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		final JTextField name = new JTextField("Username");
+		final JTextField name = new JTextField(Launcher.properties.getProperty("username", "Username"));
 		name.setPreferredSize(new Dimension(100, 20));
 		frame.add(name);
 		
-		final JTextField id = new JTextField("User ID");
+		final JTextField id = new JTextField(Launcher.properties.getProperty("userid", "User ID"));
 		id.setPreferredSize(new Dimension(100, 20));
 		frame.add(id);
 		
-		final JPasswordField ps = new JPasswordField("Password");
-		name.setPreferredSize(new Dimension(100, 20));
+		final JPasswordField ps = new JPasswordField("Pass");
+		ps.setPreferredSize(new Dimension(100, 20));
 		frame.add(ps);
 		
 		JButton login = new JButton("Login");
@@ -218,14 +218,16 @@ public class Launcher
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				EasyHttp.login(name.getText(), String.copyValueOf(ps.getPassword()));
-				Launcher.userId = Integer.parseInt(id.getText());
+				EasyHttp.login(name.getText(), String.copyValueOf(ps.getPassword()), Integer.parseInt(id.getText()));
 				Launcher.userName = name.getText();
+				Launcher.properties.setProperty("username", name.getText());
+				Launcher.userId = Integer.parseInt(id.getText());
+				Launcher.properties.setProperty("userid", id.getText());
 			}
 		});
 		frame.add(login);
 		frame.setLayout(new FlowLayout());
-		frame.setSize(new Dimension(308, 96));
+		frame.setSize(new Dimension(334, 88));
 		frame.setResizable(false);
 		frame.setVisible(true);
 		
@@ -250,16 +252,16 @@ public class Launcher
 		{
 			public void run()
 			{
-				try // Error is somewhere in this chunk
+				try
 				{
 					Clip clip = AudioSystem.getClip();
-					AudioInputStream inputStream = AudioSystem.getAudioInputStream(Launcher.class.getResource("/sounds/chatsound.wav"));
+					AudioInputStream inputStream = AudioSystem.getAudioInputStream(Launcher.class.getResource("/sounds/chatsound.WAV")); // Apparently this is case sensitive q.q
 					clip.open(inputStream);
 					clip.start();
 				}
 				catch (Exception e)
 				{
-					//Launcher.error(e.getMessage());
+					Launcher.error("Unanble to play chat sound!");
 					e.printStackTrace();
 				}
 			}
