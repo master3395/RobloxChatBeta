@@ -175,7 +175,7 @@ public class DefaultWindow extends JFrame
 		info.add(new LinkMenuItem("JSON Decoding Api: GSON", "https://code.google.com/p/google-gson/"));
 		info.add(new LinkMenuItem("HTML Character Encoding Api: Apache", "http://commons.apache.org/proper/commons-lang/"));
 		info.addSeparator();
-		info.add(new LinkMenuItem("Source Code", "http://www.google.ca/")); // TOOD: Put up on github
+		info.add(new LinkMenuItem("Source Code", "https://github.com/DaMrNelson/RobloxChatBeta"));
 		
 		setJMenuBar(menuBar);
 		setVisible(true);
