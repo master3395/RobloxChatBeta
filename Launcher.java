@@ -250,7 +250,7 @@ public class Launcher
 		{
 			public void run()
 			{
-				try
+				try // Error is somewhere in this chunk
 				{
 					Clip clip = AudioSystem.getClip();
 					AudioInputStream inputStream = AudioSystem.getAudioInputStream(Launcher.class.getResource("/sounds/chatsound.wav"));
@@ -259,7 +259,8 @@ public class Launcher
 				}
 				catch (Exception e)
 				{
-					Launcher.error(e.getMessage());
+					//Launcher.error(e.getMessage());
+					e.printStackTrace();
 				}
 			}
 		}).start();
